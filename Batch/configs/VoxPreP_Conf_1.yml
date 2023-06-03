@@ -1,0 +1,20 @@
+---
+  Filepath: "/hpc/pmc_rios/1.projects/CK1_VirtualMultiplexing/1.data/VMP_RL1_Exp001_Img010_mix4GT.czi"
+  Resultpath: "/hpc/pmc_rios/1.projects/CK1_VirtualMultiplexing/1.data"
+  img_width: 256
+  img_height: 256
+  img_depth_bottom: 8
+  img_depth_top: 136
+  channels: 3
+  normalization: "ac"
+  duplicated: False
+  outpChannels: 2
+  calc_perc: True
+  percentile: 99.8
+  denoise: False
+  generate: True
+  splitgen:
+    split: 0.2
+    random_seed: 0000
+  norm_max: 1.0
+  SuffixResultname: "Training"

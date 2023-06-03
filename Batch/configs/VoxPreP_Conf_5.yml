@@ -1,0 +1,17 @@
+---
+  Filepath: "/hpc/pmc_rios/1.projects/CK1_VirtualMultiplexing/1.data/VMP_RL1_Exp001_Img008_mix5RD.czi"
+  Resultpath: "/hpc/pmc_rios/1.projects/CK1_VirtualMultiplexing/1.data"
+  img_width: 512
+  img_height: 512
+  img_depth_bottom: 8
+  img_depth_top: 136
+  channels: 1
+  normalization: "ac"
+  duplicated: False
+  outpChannels: 2
+  calc_perc: True
+  percentile: 99.8
+  denoise: False
+  generate: True
+  norm_max: 1.0
+  SuffixResultname: "Testing"

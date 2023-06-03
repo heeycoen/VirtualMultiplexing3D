@@ -1,0 +1,27 @@
+# YAML Document starts with ---
+# Comments start with #
+---
+  train_version: 2
+  epoch: 00
+  n_epoch: 200
+  dataset_name: "256x256x128x2_P-99_Nac-1.0_Training"
+  data_path : "/hpc/pmc_rios/1.projects/CK1_VirtualMultiplexing/1.data"
+  output_path: "/hpc/pmc_rios/1.projects/CK1_VirtualMultiplexing/3.results"
+  disc_update: 5
+  batch_size: 2
+  glr: 0.0002
+  dlr: 0.0002
+  b1: 0.5
+  b2: 0.999
+  decay_epoch: 100
+  n_cpu: 8
+  img_depth: 128
+  img_height: 256
+  img_width: 256
+  channels: 2
+  d_threshold: 0.8
+  threshold: -1
+  sample_interval: 1
+  checkpoint_interval: 10
+  lambda_voxel: 50
+  suffix: "lam50"

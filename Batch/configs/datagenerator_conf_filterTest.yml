@@ -1,0 +1,19 @@
+---
+  Filepath: "/hpc/pmc_rios/1.projects/CK1_VirtualMultiplexing/1.data/VMP_RL1_Exp001_Img010_mix4GT.czi"
+  Resultpath: "/hpc/pmc_rios/1.projects/CK1_VirtualMultiplexing/1.data"
+  Filterpath: "/hpc/pmc_rios/1.projects/CK1_VirtualMultiplexing/1.data"
+  generate: False
+  splitgen: False
+  img_width: 256
+  img_height: 256
+  outpChannels: 2
+  img_depth_bottom: 10
+  img_depth_top: 138
+  split: 0.2
+  percentile: 99
+  channels: 3
+  normalization: "ac"
+  calc_perc: False
+  denoise: True
+  filter: True
+  threshold: 40

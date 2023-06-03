@@ -1,0 +1,8 @@
+---
+  model_path: "/hpc/pmc_rios/1.projects/CK1_VirtualMultiplexing/3.results/_e200_b2256x256x128x2_P-99.8_Nac_Training/saved_models/generator_200.pth"
+  channels: 2
+  predict: True
+  dataset_path: "/hpc/pmc_rios/1.projects/CK1_VirtualMultiplexing/1.data/512x512x128x2_P-99.8_Nac-1.0/validation"
+  output_path: "/hpc/pmc_rios/1.projects/CK1_VirtualMultiplexing/3.results/14file"
+  testing: False
+  duplicateChan: False

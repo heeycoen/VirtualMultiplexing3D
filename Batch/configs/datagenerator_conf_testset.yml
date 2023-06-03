@@ -1,0 +1,20 @@
+---
+  Filepath: "/hpc/pmc_rios/1.projects/CK1_VirtualMultiplexing/1.data/VMP_RL1_Exp001_Img008_mix5RD.czi"
+  Resultpath: "/hpc/pmc_rios/1.projects/CK1_VirtualMultiplexing/1.data"
+  img_width: 512
+  img_height: 512
+  img_depth_bottom: 8
+  img_depth_top: 136
+  channels: 1
+  outpChannels: 2
+  normalization: "ac"
+  duplicated: False
+  calc_perc: True
+  percentile: 99
+  denoise: False
+  Filterpath: "/hpc/pmc_rios/1.projects/CK1_VirtualMultiplexing/1.data/256x256x128_99_ac_False/train"
+  generate: True
+  splitgen: False
+  split: 0.2
+  filter: False
+  threshold: 40

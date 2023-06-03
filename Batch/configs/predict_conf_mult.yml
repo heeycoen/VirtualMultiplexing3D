@@ -1,0 +1,12 @@
+---
+  model_paths: ["/hpc/pmc_rios/1.projects/CK1_VirtualMultiplexing/3.results/Default256x256x128x2_P-99_Nac-1.0_Training/saved_models/generator_200.pth",
+                "/hpc/pmc_rios/1.projects/CK1_VirtualMultiplexing/3.results/GL4,DL4b159,b20.8,lam50256x256x128x2_P-99.8_Nac-1.0_Training/saved_models/generator_200.pth",
+                "/hpc/pmc_rios/1.projects/CK1_VirtualMultiplexing/3.results/gl4,dl4256x256x128x2_P-99_Nac-1.0_Training/saved_models/generator_200.pth",
+                "/hpc/pmc_rios/1.projects/CK1_VirtualMultiplexing/3.results/HighPercentile256x256x128x2_P-99.8_Nac-1.0_Training/saved_models/generator_200.pth",
+                "/hpc/pmc_rios/1.projects/CK1_VirtualMultiplexing/3.results/lam50256x256x128x2_P-99_Nac-1.0_Training/saved_models/generator_200.pth",
+                 ]
+  channels: 2
+  dataset_path: "/hpc/pmc_rios/1.projects/CK1_VirtualMultiplexing/1.data/512x512x128x2_P-99.8_Nac-1.0/validation"
+  output_path: "/hpc/pmc_rios/1.projects/CK1_VirtualMultiplexing/3.results/testFiles"
+  testing: False
+  duplicateChan: False
