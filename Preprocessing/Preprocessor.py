@@ -137,9 +137,7 @@ def main_Datagen(filepath, resultpath, img_width, img_height, img_depth_bottom, 
                         df.close()
 
 
-def split_dataset(resultpath, split, seed):
-    sys.stdout.write("\rSplitting data into training and validation...  %d part is validation"
-                     % (split))
+def split_dataset(resultpath, seed):
     z = [x.split("/") for x in
          glob(resultpath + "/*.h5", recursive=True)]
     z = [x[len(x) - 1] for x in z]
@@ -150,15 +148,21 @@ def split_dataset(resultpath, split, seed):
         os.mkdir(datafoldername + "/train")
     if os.path.exists(datafoldername + "/test") == False:
         os.mkdir(datafoldername + "/test")
+    if os.path.exists(datafoldername + "/validation") == False:
+        os.mkdir(datafoldername + "/validation")
     os.chdir(datafoldername)
 
-    train, test = train_test_split(z, test_size=split, shuffle=True, random_state=seed)
+    train, test = train_test_split(z, test_size=0.4, shuffle=True, random_state=seed)
+    test, validate = train_test_split(test, test_size=0.5, shuffle=True, random_state=seed)
 
     for file in train:
         os.rename(f"{file}", f"train/{file}")
 
     for file in test:
         os.rename(f"{file}", f"test/{file}")
+
+    for file in validate:
+        os.rename(f"{file}", f"validation/{file}")
 
 def list_h5_files(resultpath):
     z = [x.split("/") for x in
@@ -238,7 +242,7 @@ if __name__ == '__main__':
     if "filter" in data.keys():
         filter(resultpath, data["filter"]["threshold"])
     if "splitgen" in data.keys():
-        split_dataset(resultpath, data["splitgen"]["split"], data["splitgen"]["random_seed"])
+        split_dataset(resultpath, data["splitgen"]["random_seed"])
     if "movefiles" in data.keys():
         moveFiles(data["movefiles"]["root"], data["movefiles"]["target"])
 
