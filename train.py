@@ -13,6 +13,7 @@ from torch.utils.data import DataLoader
 from torch.autograd import Variable
 from torch.utils.tensorboard import SummaryWriter
 
+from Model.Model import GeneratorUNet, weights_init_normal, Discriminator
 from Model.dataset import CTDataset
 
 from Model.dice_loss import diceloss

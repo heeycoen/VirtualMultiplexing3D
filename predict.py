@@ -7,6 +7,7 @@ from torch.utils.data import DataLoader
 from torch.autograd import Variable
 from torch.utils.tensorboard import SummaryWriter
 
+from Model.Model import GeneratorUNet
 from Model.dataset import CTDataset, PredictDataset
 
 from skimage.metrics import structural_similarity as ssim
