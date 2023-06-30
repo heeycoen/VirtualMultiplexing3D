@@ -37,15 +37,11 @@ def test_generator(dl, generator, tensorboard_writer, Tensor,outpath):
 
         image_folder = "%s/images/%d_" % (outpath, i)
 
-        hf = h5py.File(image_folder + 'real_A.vox', 'w')
-        hf.create_dataset('data', data=real_A)
-
-        hf1 = h5py.File(image_folder + 'real_B.vox', 'w')
-        hf1.create_dataset('data', data=real_B)
-
-        hf2 = h5py.File(image_folder + 'fake_B.vox', 'w')
-        hf2.create_dataset('data', data=fake_B)
-
+        hf = h5py.File(image_folder + 'result.h5', 'w')
+        hf.create_dataset('image', data=real_A)
+        hf.create_dataset('truth', data=real_B)
+        hf.create_dataset('prediction', data=fake_B)
+        hf.close()
 
     tensorboard_writer.add_scalars(
         "Gen_MSE",
@@ -64,18 +60,21 @@ def test_generator(dl, generator, tensorboard_writer, Tensor,outpath):
 def predict(dl, generator, outpath, Tensor):
     for i, batch in enumerate(dl):
         input_img = Variable(batch["A"].type(Tensor))
+
+        target_img = Variable(batch["B"].type(Tensor))
         # generator forward pass
         generated_image = generator(input_img)
         fake_B = generated_image.cpu().detach().numpy()[0]
+        real_B = target_img.cpu().detach().numpy()[0]
         real_A = input_img.cpu().detach().numpy()[0]
 
         image_folder = "%s/%d_" % (outpath, i)
 
-        hf = h5py.File(image_folder + 'real_A.vox', 'w')
-        hf.create_dataset('data', data=real_A)
-
-        hf2 = h5py.File(image_folder + 'fake_B.vox', 'w')
-        hf2.create_dataset('data', data=fake_B)
+        hf = h5py.File(image_folder + 'result.h5', 'w')
+        hf.create_dataset('image', data=real_A)
+        hf.create_dataset('truth', data=real_B)
+        hf.create_dataset('prediction', data=fake_B)
+        hf.close()
 
 
 
