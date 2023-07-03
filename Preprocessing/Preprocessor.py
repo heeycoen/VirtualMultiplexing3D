@@ -12,6 +12,7 @@ from yaml.loader import SafeLoader
 from matplotlib import pyplot as plt
 
 
+
 def normalize(patch, percentiles, c, normalization, n = 1.0):
     if normalization == "ac":
         # Normalizing the patch using the percentile of the current channel "c"
