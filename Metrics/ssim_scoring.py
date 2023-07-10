@@ -1,6 +1,6 @@
 import numpy as np
-from Metrics.dice_scoring import dice
-from Metrics.sauvola_masking import sauvola_mask
+from dice_scoring import dice
+from sauvola_masking import sauvola_mask
 from skimage.metrics import structural_similarity as ssim
 
 
