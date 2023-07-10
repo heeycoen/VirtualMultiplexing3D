@@ -14,7 +14,7 @@ def compare_models(root):
     z = [x[len(x) - 1] for x in z]
     z = [x[0:len(x) - 3] for x in z]
     print(z)
-    print("File, VMSE, PMSE, VSSIM_masked,PSSIM_masked,VMSSIM_masked,VMDice_masked,PMSSIM_masked,PMDice_masked,VCSSIM_masked,VCDice_masked,PCSSIM_masked,PCDice_masked,VMSSIM,PMSSIM,VCSSIM,PCSSIM,VSSIM,PSSIM")
+    print("File, VMSE, PMSE, VSSIM_masked,VDice_masked,PSSIM_masked,PDice_masked,VMSSIM_masked,VMDice_masked,PMSSIM_masked,PMDice_masked,VCSSIM_masked,VCDice_masked,PCSSIM_masked,PCDice_masked,VMSSIM,PMSSIM,VCSSIM,PCSSIM,VSSIM,PSSIM")
 
     for file in z:
         result = h5py.File(f"{root}/{file}.h5", 'r')
@@ -31,12 +31,12 @@ def compare_models(root):
         VSSIM = ssim_scoring.ssim(VoxPrediction, Truth, win_size=7, channel_axis=0)
         PSSIM = ssim_scoring.ssim(PixPrediction, Truth, win_size=7, channel_axis=0)
 
-        VSSIM_masked = ssim_scoring.Masked_SSIM_AVG(VoxPrediction, Truth)
-        PSSIM_masked = ssim_scoring.Masked_SSIM_AVG(PixPrediction, Truth)
+        VSSIM_masked, VDice_masked,_,_ = ssim_scoring.Masked_SSIM_AVG(VoxPrediction, Truth)
+        PSSIM_masked, PDice_masked,_,_ = ssim_scoring.Masked_SSIM_AVG(PixPrediction, Truth)
 
         PMSE = mse(Truth, PixPrediction)
         VMSE = mse(Truth, VoxPrediction)
-        print(f"{file},{VMSE},{PMSE},{VSSIM_masked},{PSSIM_masked},{VMSSIM_masked},{VMDice_masked},{PMSSIM_masked},{PMDice_masked},{VCSSIM_masked},{VCDice_masked},{PCSSIM_masked},{PCDice_masked},{VMSSIM},{PMSSIM},{VCSSIM},{PCSSIM},{VSSIM},{PSSIM}")
+        print(f"{file},{VMSE},{PMSE},{VSSIM_masked},{VDice_masked},{PSSIM_masked},{VCDice_masked},{VMSSIM_masked},{VMDice_masked},{PMSSIM_masked},{PMDice_masked},{VCSSIM_masked},{VCDice_masked},{PCSSIM_masked},{PCDice_masked},{VMSSIM},{PMSSIM},{VCSSIM},{PCSSIM},{VSSIM},{PSSIM}")
 
 
 
