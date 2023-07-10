@@ -3,7 +3,7 @@ import os
 from glob import glob
 import h5py
 import numpy as np
-
+from sklearn.metrics import mean_squared_error
 import yaml
 from yaml.loader import SafeLoader
 import argparse
@@ -13,7 +13,7 @@ def compare_models(root):
     z = [x[len(x) - 1] for x in z]
     z = [x[0:len(x) - 3] for x in z]
 
-    print("VSSIM_masked,PSSIM_masked,VMSSIM_masked,VMDice_masked,PMSSIM_masked,PMDice_masked,VCSSIM_masked,VCDice_masked,PCSSIM_masked,PCDice_masked,VMSSIM,PMSSIM,VCSSIM,PCSSIM,VSSIM,PSSIM")
+    print("File, VMSE, PMSE, VSSIM_masked,PSSIM_masked,VMSSIM_masked,VMDice_masked,PMSSIM_masked,PMDice_masked,VCSSIM_masked,VCDice_masked,PCSSIM_masked,PCDice_masked,VMSSIM,PMSSIM,VCSSIM,PCSSIM,VSSIM,PSSIM")
 
     for file in z:
         result = h5py.File(f"{root}/{file}", 'r')
@@ -32,7 +32,10 @@ def compare_models(root):
 
         VSSIM_masked = ssim_scoring.Masked_SSIM_AVG(VoxPrediction, Truth)
         PSSIM_masked = ssim_scoring.Masked_SSIM_AVG(PixPrediction, Truth)
-        print(f"{VSSIM_masked}{PSSIM_masked}{VMSSIM_masked},{VMDice_masked},{PMSSIM_masked},{PMDice_masked},{VCSSIM_masked},{VCDice_masked},{PCSSIM_masked},{PCDice_masked},{VMSSIM},{PMSSIM},{VCSSIM},{PCSSIM},{VSSIM},{PSSIM}")
+
+        PMSE = mean_squared_error(Truth, PixPrediction)
+        VMSE = mean_squared_error(Truth, VoxPrediction)
+        print(f"{file},{VMSE},{PMSE},{VSSIM_masked},{PSSIM_masked},{VMSSIM_masked},{VMDice_masked},{PMSSIM_masked},{PMDice_masked},{VCSSIM_masked},{VCDice_masked},{PCSSIM_masked},{PCDice_masked},{VMSSIM},{PMSSIM},{VCSSIM},{PCSSIM},{VSSIM},{PSSIM}")
 
 
 
