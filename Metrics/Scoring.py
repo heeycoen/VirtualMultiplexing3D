@@ -7,6 +7,7 @@ from sklearn.metrics import mean_squared_error
 import yaml
 from yaml.loader import SafeLoader
 import argparse
+from sewar.full_ref import mse
 def compare_models(root):
     z = [x.split("/") for x in
          glob(root + "/*.h5", recursive=True)]
@@ -33,8 +34,8 @@ def compare_models(root):
         VSSIM_masked = ssim_scoring.Masked_SSIM_AVG(VoxPrediction, Truth)
         PSSIM_masked = ssim_scoring.Masked_SSIM_AVG(PixPrediction, Truth)
 
-        PMSE = mean_squared_error(Truth, PixPrediction)
-        VMSE = mean_squared_error(Truth, VoxPrediction)
+        PMSE = mse(Truth, PixPrediction)
+        VMSE = mse(Truth, VoxPrediction)
         print(f"{file},{VMSE},{PMSE},{VSSIM_masked},{PSSIM_masked},{VMSSIM_masked},{VMDice_masked},{PMSSIM_masked},{PMDice_masked},{VCSSIM_masked},{VCDice_masked},{PCSSIM_masked},{PCDice_masked},{VMSSIM},{PMSSIM},{VCSSIM},{PCSSIM},{VSSIM},{PSSIM}")
 
 
