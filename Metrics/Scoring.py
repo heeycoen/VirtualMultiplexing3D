@@ -12,11 +12,11 @@ def compare_models(root):
          glob(root + "/*.h5", recursive=True)]
     z = [x[len(x) - 1] for x in z]
     z = [x[0:len(x) - 3] for x in z]
-
+    print(z)
     print("File, VMSE, PMSE, VSSIM_masked,PSSIM_masked,VMSSIM_masked,VMDice_masked,PMSSIM_masked,PMDice_masked,VCSSIM_masked,VCDice_masked,PCSSIM_masked,PCDice_masked,VMSSIM,PMSSIM,VCSSIM,PCSSIM,VSSIM,PSSIM")
 
     for file in z:
-        result = h5py.File(f"{root}/{file}", 'r')
+        result = h5py.File(f"{root}/{file}.h5", 'r')
         PixPrediction = np.array([result["pix2pix"][1], result["pix2pix"][0]]) / 255
         VoxPrediction = np.array(result["prediction"])
         Truth = np.array(result["truth"])
