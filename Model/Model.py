@@ -102,7 +102,7 @@ class GeneratorUNet(nn.Module):
             # nn.Conv3d(128, out_channels, 4, padding=1),
             # nn.Tanh(),
             nn.ConvTranspose3d(128, out_channels, 4, 2, 1),
-            nn.Tanh()
+            nn.Sigmoid()
         )
 
     def forward(self, x):
