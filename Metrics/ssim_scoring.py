@@ -66,10 +66,9 @@ def Masked_SSIM_AVG_TruthMask(Prediction, Truth, Mask=None):
         mask_truth = Mask
     RealMasked = np.where(np.array([mask_truth, mask_truth]), Truth, 0)
 
-    masked_prediction = np.where(np.array([mask_prediction, mask_prediction]), Prediction, 0)
-    Dice = dice(mask_prediction, mask_truth)
+    masked_prediction = np.where(np.array([mask_truth, mask_truth]), Prediction, 0)
     SSIM = ssim(masked_prediction, RealMasked, win_size=7, channel_axis=0)
-    return SSIM, Dice, mask_truth, mask_prediction
+    return SSIM
 def Masked_SSIM_TruthMask(Prediction, Truth, Mask=None):
     if Mask is None:
         mask_truth = sauvola_mask(Truth)
