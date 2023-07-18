@@ -8,7 +8,8 @@ import yaml
 from yaml.loader import SafeLoader
 import argparse
 from sewar.full_ref import mse, rmse
-def compare_models(root,name,dataset_name):
+from ssim_scoring import sauvola_mask,Masked_SSIM_TruthMask, Masked_SSIM_AVG_TruthMask
+def compare_models_masked_SSIM(root,name,dataset_name):
     z = [x.split("/") for x in
          glob(root + "/*.h5", recursive=True)]
     z = [x[len(x) - 1] for x in z]
@@ -33,6 +34,35 @@ def compare_models(root,name,dataset_name):
         RMSE = rmse(Truth, Prediction)
         print(f"{file},{name},{MSE},{RMSE},{SSIM_normal}")
 
+def compare_models_truth_mask(root,names,dataset_names):
+    z = [x.split("/") for x in
+         glob(root + "/*.h5", recursive=True)]
+    z = [x[len(x) - 1] for x in z]
+    z = [x[0:len(x) - 3] for x in z]
+    ssim_keys = ['SSIM_masked','MSSIM_masked','NSSIM_masked']
+    printstring = f"File,model"
+    for key in ssim_keys:
+        printstring = f"{printstring},{key}"
+    print(printstring)
+
+    for file in z:
+        result = h5py.File(f"{root}/{file}.h5", 'r')
+        Truth = np.array(result["truth"])
+        Truth_mask = sauvola_mask(Truth[0] + Truth[1])
+        Truth_mask_1 = sauvola_mask(Truth[1])
+        Truth_mask_0 = sauvola_mask(Truth[0])
+        for i, f in enumerate(names):
+
+            if dataset_names[i] == "pix2pix":
+                Prediction = np.array([result["pix2pix"][1], result["pix2pix"][0]]) / 255
+            else:
+                Prediction = np.array(result[dataset_names[i]])
+
+            SSIM = Masked_SSIM_AVG_TruthMask(Prediction,Truth,Truth_mask)
+            SSIM_1 = Masked_SSIM_TruthMask(Prediction[1],Truth[1],Truth_mask_1)
+            SSIM_0 = Masked_SSIM_TruthMask(Prediction[0],Truth[0],Truth_mask_0)
+
+            print(f"{file},{f},{SSIM},{SSIM_0},{SSIM_1}")
 def SSIM_result(Prediction, Truth):
     VMSSIM_masked, VMDice_masked ,_,_= ssim_scoring.Masked_SSIM(Prediction[0], Truth[0])
     VCSSIM_masked, VCDice_masked,_,_= ssim_scoring.Masked_SSIM(Prediction[1], Truth[1])
@@ -42,6 +72,8 @@ def SSIM_result(Prediction, Truth):
 
     VSSIM_masked, VDice_masked, _, _ = ssim_scoring.Masked_SSIM_AVG(Prediction, Truth)
     return f"{VSSIM_masked},{VDice_masked},{VMSSIM_masked},{VMDice_masked},{VCSSIM_masked},{VCDice_masked},{VMSSIM},{VCSSIM},{VSSIM}"
+
+
 
 
 if __name__ == '__main__':
@@ -55,4 +87,8 @@ if __name__ == '__main__':
     with open(args.c) as f:
         data = yaml.load(f, Loader=SafeLoader)
 
-    compare_models(data["input"],data["name"],data["dataset_name"])
+    if data["type"] == "masked_SSIM":
+        compare_models_masked_SSIM(data["input"],data["name"],data["dataset_name"])
+    if data["type"] == "masked_SSIM_truth_mask":
+        compare_models_truth_mask(data["input"],data["name"],data["dataset_name"])
+

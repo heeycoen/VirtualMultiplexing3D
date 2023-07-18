@@ -1,6 +1,6 @@
 import numpy as np
-from dice_scoring import dice
-from sauvola_masking import sauvola_mask
+from Metrics.dice_scoring import dice
+from Metrics.sauvola_masking import sauvola_mask
 from skimage.metrics import structural_similarity as ssim
 
 
@@ -34,21 +34,48 @@ def Masked_SSIM_Double(PredictionVox, PredictionPix, Truth):
     return VoxSSIM, VoxDice, PixSSIM, PixDice, mask_truth
 
 
-def Masked_SSIM_AVG(Prediction, Truth):
-    mask_truth = sauvola_mask(Truth[0] + Truth[1])
+def Masked_SSIM_AVG(Prediction, Truth, Mask=None):
+    if Mask is None:
+        mask_truth = sauvola_mask(Truth[0] + Truth[1])
+    else:
+        mask_truth = Mask
+    RealMasked = np.where(np.array([mask_truth, mask_truth]), Truth, 0)
     mask_prediction = sauvola_mask(Prediction[0] + Prediction[1])
     masked_prediction = np.where(np.array([mask_prediction, mask_prediction]), Prediction, 0)
-    RealMasked = np.where(np.array([mask_truth, mask_truth]), Truth, 0)
     Dice = dice(mask_prediction, mask_truth)
     SSIM = ssim(masked_prediction, RealMasked, win_size=7, channel_axis=0)
     return SSIM, Dice, mask_truth, mask_prediction
 
 
-def Masked_SSIM(Prediction, Truth):
-    mask_truth = sauvola_mask(Truth)
+def Masked_SSIM(Prediction, Truth, Mask=None):
+    if Mask is None:
+        mask_truth = sauvola_mask(Truth)
+    else:
+        mask_truth = Mask
+    RealMasked = np.where(mask_truth, Truth, 0)
     mask_prediction = sauvola_mask(Prediction)
     masked_prediction = np.where(mask_prediction, Prediction, 0)
-    RealMasked = np.where(mask_truth, Truth, 0)
     Dice = dice(mask_prediction, mask_truth)
     SSIM = ssim(masked_prediction, RealMasked, win_size=7, channel_axis=0)
     return SSIM, Dice, mask_truth, mask_prediction
+
+def Masked_SSIM_AVG_TruthMask(Prediction, Truth, Mask=None):
+    if Mask is None:
+        mask_truth = sauvola_mask(Truth[0] + Truth[1])
+    else:
+        mask_truth = Mask
+    RealMasked = np.where(np.array([mask_truth, mask_truth]), Truth, 0)
+
+    masked_prediction = np.where(np.array([mask_prediction, mask_prediction]), Prediction, 0)
+    Dice = dice(mask_prediction, mask_truth)
+    SSIM = ssim(masked_prediction, RealMasked, win_size=7, channel_axis=0)
+    return SSIM, Dice, mask_truth, mask_prediction
+def Masked_SSIM_TruthMask(Prediction, Truth, Mask=None):
+    if Mask is None:
+        mask_truth = sauvola_mask(Truth)
+    else:
+        mask_truth = Mask
+    RealMasked = np.where(mask_truth, Truth, 0)
+    masked_prediction = np.where(mask_truth, Prediction, 0)
+    SSIM = ssim(masked_prediction, RealMasked, win_size=7, channel_axis=0)
+    return SSIM
