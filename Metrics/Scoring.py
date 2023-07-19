@@ -50,12 +50,14 @@ def compare_models_truth_mask(root, names, dataset_names):
     for key in ssim_keys:
         printstring = f"{printstring},{key}"
     print(printstring)
-    p = Pool(8)
+    p = Pool(10)
     inp = []
     for file in z:
         inp.append((file, root, names, dataset_names))
-    p.map(Pool_func, inp)
-
+    results = p.map(Pool_func, inp)
+    for res in results:
+        for r in res:
+            print(r)
 
 def Pool_func(inp):
     file, root, names, dataset_names = inp
@@ -68,6 +70,7 @@ def Pool_func(inp):
     Truth_mask[Truth_mask_0] = True
 
     blurred_truth = gaussian_filter(Truth, sigma=1.5)
+    lst = []
     for i, f in enumerate(names):
 
         if dataset_names[i] == "pix2pix":
@@ -83,8 +86,8 @@ def Pool_func(inp):
         SSIM_blurred_1 = Masked_SSIM_TruthMask(Prediction[1], blurred_truth[1], Truth_mask_1)
         SSIM_blurred_0 = Masked_SSIM_TruthMask(Prediction[0], blurred_truth[0], Truth_mask_0)
 
-        print(f"{file},{f},{SSIM},{SSIM_0},{SSIM_1},{SSIM_blurred},{SSIM_blurred_0},{SSIM_blurred_1}")
-
+        lst.append(f"{file},{f},{SSIM},{SSIM_0},{SSIM_1},{SSIM_blurred},{SSIM_blurred_0},{SSIM_blurred_1}")
+    return lst
 
 def SSIM_result(Prediction, Truth):
     VMSSIM_masked, VMDice_masked, _, _ = ssim_scoring.Masked_SSIM(Prediction[0], Truth[0])
