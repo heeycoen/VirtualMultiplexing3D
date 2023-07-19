@@ -69,7 +69,7 @@ def Pool_func(inp):
     Truth_mask = Truth_mask_1
     Truth_mask[Truth_mask_0] = True
 
-    blurred_truth = gaussian_filter(Truth, sigma=1.5)
+    blurred_truth = gaussian_filter(Truth, sigma=1.25)
     lst = []
     for i, f in enumerate(names):
 
