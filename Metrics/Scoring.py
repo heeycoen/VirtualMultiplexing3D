@@ -1,3 +1,5 @@
+from scipy.ndimage import gaussian_filter
+
 import ssim_scoring
 import os
 from glob import glob
@@ -39,7 +41,7 @@ def compare_models_truth_mask(root,names,dataset_names):
          glob(root + "/*.h5", recursive=True)]
     z = [x[len(x) - 1] for x in z]
     z = [x[0:len(x) - 3] for x in z]
-    ssim_keys = ['SSIM_masked','MSSIM_masked','NSSIM_masked']
+    ssim_keys = ['SSIM_masked','MSSIM_masked','NSSIM_masked','SSIM_blurred','MSSIM_blurred','NSSIM_blurred']
     printstring = f"File,model"
     for key in ssim_keys:
         printstring = f"{printstring},{key}"
@@ -48,9 +50,12 @@ def compare_models_truth_mask(root,names,dataset_names):
     for file in z:
         result = h5py.File(f"{root}/{file}.h5", 'r')
         Truth = np.array(result["truth"])
-        Truth_mask = sauvola_mask(Truth[0] + Truth[1])
         Truth_mask_1 = sauvola_mask(Truth[1])
         Truth_mask_0 = sauvola_mask(Truth[0])
+        Truth_mask = Truth_mask_1
+        Truth_mask[Truth_mask_0] = True
+
+        blurred_truth = gaussian_filter(Truth, sigma=1.5)
         for i, f in enumerate(names):
 
             if dataset_names[i] == "pix2pix":
@@ -62,7 +67,12 @@ def compare_models_truth_mask(root,names,dataset_names):
             SSIM_1 = Masked_SSIM_TruthMask(Prediction[1],Truth[1],Truth_mask_1)
             SSIM_0 = Masked_SSIM_TruthMask(Prediction[0],Truth[0],Truth_mask_0)
 
-            print(f"{file},{f},{SSIM},{SSIM_0},{SSIM_1}")
+
+            SSIM_blurred = Masked_SSIM_AVG_TruthMask(Prediction,blurred_truth,Truth_mask)
+            SSIM_blurred_1 = Masked_SSIM_TruthMask(Prediction[1],blurred_truth[1],Truth_mask_1)
+            SSIM_blurred_0 = Masked_SSIM_TruthMask(Prediction[0],blurred_truth[0],Truth_mask_0)
+
+            print(f"{file},{f},{SSIM},{SSIM_0},{SSIM_1},{SSIM_blurred},{SSIM_blurred_0},{SSIM_blurred_1}")
 def SSIM_result(Prediction, Truth):
     VMSSIM_masked, VMDice_masked ,_,_= ssim_scoring.Masked_SSIM(Prediction[0], Truth[0])
     VCSSIM_masked, VCDice_masked,_,_= ssim_scoring.Masked_SSIM(Prediction[1], Truth[1])
