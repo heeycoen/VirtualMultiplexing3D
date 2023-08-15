@@ -60,9 +60,9 @@ def main_Datagen(filepath, resultpath, img_width, img_height, img_depth_bottom, 
             for idx in range(img_depth_bottom, img_depth_top):
                 sys.stdout.write("\rLoading img: [%d/%d]"
                          % (idx - img_depth_bottom + 1, img_depth_top - img_depth_bottom))
-                # Extracting layer (or plane) using the reading function from stapl3D. The plane consist of 49 tiles.
+                # Extracting layer (or plane) using the reading function from stapl3D.
                 data = shading.read_tiled_plane(filepath, channel, idx)
-                # Stacking the 49 tiles on top of each other.
+
                 dstacked = np.stack(data, axis=0)
                 # Add stacked tiles from the single plane to temp list collecting each plane
                 tmp_channel_stacked_planes.append(dstacked)
