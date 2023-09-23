@@ -11,7 +11,34 @@ from yaml.loader import SafeLoader
 import argparse
 from sewar.full_ref import mse, rmse
 from ssim_scoring import sauvola_mask, Masked_SSIM_TruthMask, Masked_SSIM_AVG_TruthMask
+from pytorch_msssim import ms_ssim
+import torch
 
+def compare_models_MS_SSIM(root, name, dataset_name):
+    z = [x.split("/") for x in
+         glob(root + "/*.h5", recursive=True)]
+    z = [x[len(x) - 1] for x in z]
+    z = [x[0:len(x) - 3] for x in z]
+    ssim_keys = ['MSSIM',
+                 'NSSIM', 'SSIM']
+    printstring = f"File,model,MSE,RMSE"
+    for key in ssim_keys:
+        printstring = f"{printstring},{key}"
+    print(printstring)
+
+    for file in z:
+        result = h5py.File(f"{root}/{file}.h5", 'r')
+        if dataset_name == "pix2pix":
+            Prediction = np.array([result["pix2pix"][1], result["pix2pix"][0]]) / 255
+        else:
+            Prediction = np.array(result[dataset_name])
+        Truth = np.array(result["truth"])
+
+        SSIM_normal = ms_ssim(torch.Tensor(Truth),torch.Tensor(Prediction), data_range=1, size_average=False).item()
+
+        MSE = mse(Truth, Prediction)
+        RMSE = rmse(Truth, Prediction)
+        print(f"{file},{name},{MSE},{RMSE},{SSIM_normal}")
 
 def compare_models_masked_SSIM(root, name, dataset_name):
     z = [x.split("/") for x in
@@ -115,3 +142,5 @@ if __name__ == '__main__':
         compare_models_masked_SSIM(data["input"], data["name"], data["dataset_name"])
     if data["type"] == "masked_SSIM_truth_mask":
         compare_models_truth_mask(data["input"], data["name"], data["dataset_name"])
+    if data["type"] == "ms_SSIM":
+        compare_models_MS_SSIM(data["input"], data["name"], data["dataset_name"])

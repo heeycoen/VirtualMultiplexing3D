@@ -5,7 +5,7 @@ import glob
 
 
 class CTDataset(Dataset):
-    def __init__(self, datapath,onechan=False):
+    def __init__(self, datapath, onechan=False):
         self.datapath = datapath
         self.samples = glob.glob(self.datapath + '/*.h5')
         self.onechan = onechan
@@ -20,6 +20,7 @@ class CTDataset(Dataset):
         unmixed = np.array(dat["unmixed"])
 
         return {"A": image, "B": unmixed}
+
 
 class PredictDataset(Dataset):
     def __init__(self, datapath):

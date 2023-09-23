@@ -12,25 +12,6 @@ from Model.dataset import PredictDataset
 from Metrics.ssim_scoring import Masked_SSIM_AVG, Masked_SSIM
 import torch
 
-import h5py
-
-
-def predict(dl, generator, outpath, Tensor, modelnr):
-    for i, batch in enumerate(dl):
-        input_img = Variable(batch["A"].type(Tensor))
-        # generator forward pass
-        generated_image = generator(input_img)
-        fake_B = generated_image.cpu().detach().numpy()[0]
-        real_A = input_img.cpu().detach().numpy()[0]
-
-        image_folder = "%s/%d_%d_" % (outpath, modelnr, i)
-
-        hf = h5py.File(image_folder + 'real_A.vox', 'w')
-        hf.create_dataset('data', data=real_A)
-
-        hf2 = h5py.File(image_folder + 'fake_B.vox', 'w')
-        hf2.create_dataset('data', data=fake_B)
-
 
 def test(dl, generator, Tensor):
     VoxSSIMAVG = []

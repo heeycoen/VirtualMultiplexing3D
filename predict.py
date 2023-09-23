@@ -16,51 +16,18 @@ import torch
 
 import h5py
 
-def test_generator(dl, generator, tensorboard_writer, Tensor,outpath):
-    avgMSE = 0
-    avgSSIM_M = 0
-    avgSSIM_N = 0
+
+def predict(dl, generator, outpath):
+    """
+    predict the files in the dataloader into files with the image and prediction
+    :param dl:
+    :param generator:
+    :param outpath:
+    """
+    cuda = True if torch.cuda.is_available() else False
+    Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
     for i, batch in enumerate(dl):
         input_img = Variable(batch["A"].type(Tensor))
-        target_img = Variable(batch["B"].type(Tensor))
-        # generator forward pass
-        generated_image = generator(input_img)
-        fake_B = generated_image.cpu().detach().numpy()[0]
-        real_B = target_img.cpu().detach().numpy()[0]
-        mse = mean_squared_error(fake_B, real_B)
-        ss_n = ssim(fake_B[1], real_B[1], winsize=(7, 7), channel_axis=0)
-        ss_m = ssim(fake_B[0], real_B[0], winsize=(7, 7), channel_axis=0)
-        avgMSE += mse
-        avgSSIM_M += ss_m
-        avgSSIM_N += ss_n
-        real_A = input_img.cpu().detach().numpy()[0]
-
-        image_folder = "%s/images/%d_" % (outpath, i)
-
-        hf = h5py.File(image_folder + 'result.h5', 'w')
-        hf.create_dataset('image', data=real_A)
-        hf.create_dataset('truth', data=real_B)
-        hf.create_dataset('prediction', data=fake_B)
-        hf.close()
-
-    tensorboard_writer.add_scalars(
-        "Gen_MSE",
-        {"train": avgMSE / len(dl)},
-    )
-    tensorboard_writer.add_scalars(
-        "Gen_SSIM",
-        {"train_mem": avgSSIM_M / len(dl)},
-    )
-    tensorboard_writer.add_scalars(
-        "Gen_SSIM",
-        {"train_nuc": avgSSIM_N / len(dl)},
-    )
-
-
-def predict(dl, generator, outpath, Tensor):
-    for i, batch in enumerate(dl):
-        input_img = Variable(batch["A"].type(Tensor))
-
 
         # generator forward pass
         generated_image = generator(input_img)
@@ -75,7 +42,16 @@ def predict(dl, generator, outpath, Tensor):
         hf.close()
 
 
-def predict_full(dl, generator, outpath, Tensor):
+def predict_full(dl, generator, output_path):
+    """
+    Predict the files in the dataloader into files with both the images, truth and prediction
+    :param dl: dataloader
+    :param generator: pytorch generator
+    :param output_path:
+    """
+
+    cuda = True if torch.cuda.is_available() else False
+    Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
     for i, batch in enumerate(dl):
         input_img = Variable(batch["A"].type(Tensor))
 
@@ -86,13 +62,14 @@ def predict_full(dl, generator, outpath, Tensor):
         real_B = target_img.cpu().detach().numpy()[0]
         real_A = input_img.cpu().detach().numpy()[0]
 
-        image_folder = "%s/%d_" % (outpath, i)
+        image_folder = "%s/%d_" % (output_path, i)
 
         hf = h5py.File(image_folder + 'result.h5', 'w')
         hf.create_dataset('image', data=real_A)
         hf.create_dataset('truth', data=real_B)
         hf.create_dataset('prediction', data=fake_B)
         hf.close()
+
 
 def load_model(filepath, channels):
     generator = GeneratorUNet(channels, channels)
@@ -102,9 +79,8 @@ def load_model(filepath, channels):
     if cuda:
         generator = generator.cuda()
 
-    # Tensor type
-    Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
-    return generator, Tensor
+    return generator
+
 
 if __name__ == '__main__':
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '0'
@@ -120,7 +96,7 @@ if __name__ == '__main__':
     with open(args.c) as f:
         data = yaml.load(f, Loader=SafeLoader)
 
-    generator, Tensor = load_model(data["model_path"],data["channels"])
+    generator = load_model(data["model_path"], data["channels"])
 
     if os.path.exists(data["output_path"]) == False:
         os.mkdir(data["output_path"])
@@ -133,7 +109,7 @@ if __name__ == '__main__':
             num_workers=1,
         )
 
-        predict(dl,generator,data["output_path"], Tensor)
+        predict(dl, generator, data["output_path"])
 
     if data["predict_full"]:
         dl = DataLoader(
@@ -143,15 +119,4 @@ if __name__ == '__main__':
             num_workers=1,
         )
 
-        predict(dl,generator,data["output_path"], Tensor)
-
-    elif data["testing"]:
-        dl = DataLoader(
-            CTDataset(data["dataset_path"]),
-            batch_size=1,
-            shuffle=False,
-            num_workers=1,
-        )
-
-        tensorboard_writer = SummaryWriter(log_dir="%s/tb" % (data["output_path"]))
-        test_generator(dl, generator, tensorboard_writer, Tensor, data["output_path"])
+        predict_full(dl, generator, data["output_path"])
