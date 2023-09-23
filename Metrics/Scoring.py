@@ -14,7 +14,8 @@ from ssim_scoring import sauvola_mask, Masked_SSIM_TruthMask, Masked_SSIM_AVG_Tr
 from pytorch_msssim import ms_ssim
 import torch
 
-def compare_models_MS_SSIM(root, name, dataset_name):
+
+def compare_models_MS_SSIM(root, names, dataset_names):
     z = [x.split("/") for x in
          glob(root + "/*.h5", recursive=True)]
     z = [x[len(x) - 1] for x in z]
@@ -25,20 +26,42 @@ def compare_models_MS_SSIM(root, name, dataset_name):
     for key in ssim_keys:
         printstring = f"{printstring},{key}"
     print(printstring)
-
+    p = Pool(10)
+    inp = []
     for file in z:
-        result = h5py.File(f"{root}/{file}.h5", 'r')
-        if dataset_name == "pix2pix":
+        inp.append((file, root, names, dataset_names))
+    results = p.map(Pool_func_ms_SSIM, inp)
+    for res in results:
+        for r in res:
+            print(r)
+
+
+def Pool_func_ms_SSIM(inp):
+    file, root, names, dataset_names = inp
+
+    result = h5py.File(f"{root}/{file}.h5", 'r')
+    Truth = np.array(result["truth"])
+    lst = []
+    for i, f in enumerate(names):
+
+        if dataset_names[i] == "pix2pix":
             Prediction = np.array([result["pix2pix"][1], result["pix2pix"][0]]) / 255
         else:
-            Prediction = np.array(result[dataset_name])
-        Truth = np.array(result["truth"])
+            Prediction = np.array(result[dataset_names[i]])
 
-        SSIM_normal = ms_ssim(torch.Tensor(Truth),torch.Tensor(Prediction), data_range=1, size_average=False).item()
+        SSIM_normal = ms_ssim(torch.Tensor([Truth]), torch.Tensor([Prediction]), data_range=1,
+                              size_average=False).item()
 
+        SSIM_n = ms_ssim(torch.Tensor([Truth[0]]), torch.Tensor([Prediction[0]]), data_range=1,
+                              size_average=False).item()
+        SSIM_m = ms_ssim(torch.Tensor([Truth[1]]), torch.Tensor([Prediction[1]]), data_range=1,
+                              size_average=False).item()
         MSE = mse(Truth, Prediction)
         RMSE = rmse(Truth, Prediction)
-        print(f"{file},{name},{MSE},{RMSE},{SSIM_normal}")
+
+        lst.append(f"{file},{f},{MSE},{RMSE},{SSIM_normal},{SSIM_m},{SSIM_n}")
+    return lst
+
 
 def compare_models_masked_SSIM(root, name, dataset_name):
     z = [x.split("/") for x in
@@ -86,6 +109,7 @@ def compare_models_truth_mask(root, names, dataset_names):
         for r in res:
             print(r)
 
+
 def Pool_func(inp):
     file, root, names, dataset_names = inp
 
@@ -115,6 +139,7 @@ def Pool_func(inp):
 
         lst.append(f"{file},{f},{SSIM},{SSIM_0},{SSIM_1},{SSIM_blurred},{SSIM_blurred_0},{SSIM_blurred_1}")
     return lst
+
 
 def SSIM_result(Prediction, Truth):
     VMSSIM_masked, VMDice_masked, _, _ = ssim_scoring.Masked_SSIM(Prediction[0], Truth[0])
