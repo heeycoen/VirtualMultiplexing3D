@@ -52,9 +52,9 @@ def Pool_func_ms_SSIM(inp):
         SSIM_normal = ms_ssim(torch.Tensor(np.array([Truth])), torch.Tensor(np.array([Prediction])), data_range=1,
                               size_average=False).item()
 
-        SSIM_n = ms_ssim(torch.Tensor(np.array([Truth[0]])), torch.Tensor(np.array([Prediction[0]])), data_range=1,
+        SSIM_m = ms_ssim(torch.Tensor(np.array([Truth[0]])), torch.Tensor(np.array([Prediction[0]])), data_range=1,
                               size_average=False).item()
-        SSIM_m = ms_ssim(torch.Tensor(np.array([Truth[1]])), torch.Tensor(np.array([Prediction[1]])), data_range=1,
+        SSIM_n = ms_ssim(torch.Tensor(np.array([Truth[1]])), torch.Tensor(np.array([Prediction[1]])), data_range=1,
                               size_average=False).item()
         MSE = mse(Truth, Prediction)
         RMSE = rmse(Truth, Prediction)
