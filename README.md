@@ -26,6 +26,10 @@ Installation should take <15 minutes, but due to Conda issues it could take some
 
 VM-3D uses the STAPL3D library (version used with Python 3.9.0) :
 Install using their instructions: https://github.com/RiosGroup/STAPL3D
+or install all packages from the package-list.txt using Conda 
+```
+conda create -n myenv --file package-list.txt
+```
 
 ## Input data
 The current version of the VM-3D model has been trained and tested with the mixed channels from KI67 and CDH1 in 3D fluorescence scans of organoids.
