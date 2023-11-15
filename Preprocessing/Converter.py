@@ -5,11 +5,10 @@ import matplotlib
 import os
 import numpy as np
 import h5py
-import yaml
 from PIL import Image
 from numpy import asarray
+import yaml
 from yaml.loader import SafeLoader
-
 
 def convert_to_pix2pix(file, data):
     datafolder = data + "/pix2pix_conversion"
@@ -63,3 +62,22 @@ def convert_from_pix2pix_results(root, filename, nr):
                 mx[2, i, 0:512, 0:512] = arr[0:512, 0:512, 2]
             i += 1
         df.close()
+
+
+
+
+if __name__ == '__main__':
+    # Commandline arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--c", type=str, default="", help="Enter file path for .czi file")
+    args = parser.parse_args()
+
+    # Open the file and load the file
+    data = []
+    with open(args.c) as f:
+        data = yaml.load(f, Loader=SafeLoader)
+
+    if data["process"] == "toPix2Pix":
+        batch_convert_to_pix2pix(data["inputpath"])
+    if data["process"] == "fromPix2Pix":
+        batch_convert_from_pix2pix(data["inputpath"])
